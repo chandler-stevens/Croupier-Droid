@@ -116,7 +116,7 @@ def Play(funds, betting):
 def Main():
     funds = Start()
     betting = False
-    while funds != "q" and (betting and funds >= 0) or (not betting and funds > 0):
+    while funds != "q" and ((betting and funds >= 0) or (not betting and funds > 0)):
         if funds != 1:
             print("\nYou now have", funds, "credits remaining.\n")
         else:
