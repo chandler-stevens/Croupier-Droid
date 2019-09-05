@@ -5,6 +5,7 @@
 ## Changelog
 
 ### v2.0:
++ *Currently in BETA*
 + Server and client
 + Minimal game logic
 + Non-graphical
