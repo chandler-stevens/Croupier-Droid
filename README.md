@@ -2,7 +2,7 @@
 
 ![alt text](http://img1.starwars-holonet.com/holonet/dictionnaire/photos/droid_rh7.jpg)
 
-## Latest Stable Version: v1.1
+## Latest Stable Version: v1.2
 
 ## Changelog
 ### v2.0:
@@ -13,12 +13,21 @@
 + No validation
 + Requires: Python v3 (Windows)
 
-### v1.1:
+### v1.2:
 + **Latest stable version**
++ **Restructured into MVC model**
++ Client only
++ Basic game logic
++ Non-graphical
++ High validation and robust recovery
++ Requires: Python v3 (Windows) or QPython (Android)
+
+### v1.1:
++ *Made obsolete by v1.2*
 + Client only
 + **Added basic game logic**
 + Non-graphical
-+ **Added validation and robust recovery**
++ **Added high validation and robust recovery**
 + Requires: Python v3 (Windows) or QPython (Android)
 
 ### v1.0:
