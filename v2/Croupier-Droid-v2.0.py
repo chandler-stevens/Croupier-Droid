@@ -4,28 +4,43 @@ from DroidModel import *
 def Transmit(message, datalink, mainframe):
     datalink.sendto(bytes(message, "utf-8"), mainframe)
 
-def Compute(player, funds, datalink, mainframe):
-    result = Action(funds)
-    if result[1] > 0:
-        if (result[0] == "Ante"):
-            message = result[0] + ":" + str(result[1]) + ":" + str(result[2])
-        if (result[0] == "Open"):
-            message = result[0] + ":" + str(funds[1])
-        # # Receive response message
-        # print('\nPending confirmation...')
-        # receivedMessage, mainframe = datalink.recvfrom(4096)
-        # receivedMessage = str(receivedMessage.decode("utf-8"))
-    else:
-        print("\nYou have gone bankrupt!\n")
-        Transmit("Eliminated:" + player, datalink, mainframe)
-        return False
-    Transmit(message, datalink, mainframe)
-    return True
+def Receive(datalink):
+    message, mainframe = datalink.recvfrom(4096)
+    return str(message.decode("utf-8"))
 
-datalink = socket(AF_INET, SOCK_DGRAM)
-mainframe = ("192.168.254.29", 8080)
-player, funds = Start()
-Transmit("Joined:" + player, datalink, mainframe)
-eliminated = False
-while (not eliminated):
-    eliminated = Compute(player, funds, datalink, mainframe)
+def Main():
+    datalink = socket(AF_INET, SOCK_DGRAM)
+    mainframe = ("127.0.0.1", 8080)
+    player = Join()
+    message = "Joined:" + player
+    Transmit(message, datalink, mainframe)
+    while message != "All players have joined.":
+        message = Receive(datalink)
+        Display(message)
+        if message == ("You have been designated as " +
+                       "the dealer for this round."):
+            while not Validate(message) or int(message) <= 1:
+                message = input("How many total players, including yourself, " +
+                                "are playing in this round?\t")
+            Transmit(message, datalink, mainframe)
+        elif message == "There are enough players for this round.":
+            RequestEnd()
+            return
+    funds = Start()
+    betting = False
+    while funds != "q" and (
+            (betting and funds >= 0) or (not betting and funds > 0)):
+        DisplayFunds(funds)
+        funds, betting, message = Action(funds, betting)
+        if funds != "q":
+            Transmit(message, datalink, mainframe)
+        else:
+            Transmit("Quit:" + player, datalink, mainframe)
+            RequestEnd()
+        if Validate(funds) and funds <= 0:
+            DisplayEliminated()
+            Transmit("Eliminated:" + player, datalink, mainframe)
+            RequestEnd()
+            return
+
+Main()

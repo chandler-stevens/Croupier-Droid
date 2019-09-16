@@ -20,7 +20,7 @@
 + Basic game logic
 + Non-graphical
 + High validation and robust recovery
-+ Requires: Python v3 (Windows) or QPython (Android)
++ Requires: Python v3 (Windows) or QPython 3 (Android)
 
 ### v1.1:
 + *Made obsolete by v1.2*
@@ -28,7 +28,7 @@
 + **Added basic game logic**
 + Non-graphical
 + **Added high validation and robust recovery**
-+ Requires: Python v3 (Windows) or QPython (Android)
++ Requires: Python v3 (Windows) or QPython 3 (Android)
 
 ### v1.0:
 + *Made obsolete by v1.1*
@@ -37,4 +37,4 @@
 + Minimal game logic
 + Non-graphical
 + No validation or recovery
-+ Requires: Python v3 (Windows) or QPython (Android)
++ Requires: Python v3 (Windows) or QPython 3 (Android)

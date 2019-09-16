@@ -47,6 +47,8 @@ def Play(funds, betting):
         newFunds = funds
         if betting:
             choice = RequestBetting()
+            if choice == "p":
+                return funds, betting
             if choice == "o":
                 newFunds = Open(funds)
                 if newFunds != "x":
@@ -73,9 +75,8 @@ def Play(funds, betting):
                 return newFunds, False
         elif choice == "q":
             return choice, betting
-        if newFunds == "x" or choice == "p":
-            return funds, betting
-        DisplaySelection()
+        if newFunds != "x":
+            DisplaySelection()
         
         
 def Main():
