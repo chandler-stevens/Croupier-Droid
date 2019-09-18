@@ -1,23 +1,14 @@
 from DroidControllerv1u4 import *
 
-def Rule():
-    rule = RequestRule()
-    if rule == "x":
-        RequestOver()
-    elif rule == 2:
-        return 4
-    else:
-        return 3
-
-
-def ComputeAnte(funds):
-    game = RequestGame(funds)
-    if game != "x":
-        funds -= game
-        sabacc = RequestSabacc(funds)
-        if sabacc != "x":
-            return funds - sabacc
+def Start():
+    funds = RequestStart()
+    if funds != "x":
+        return funds
     return "x"
+
+def ComputeAnte(funds, gamePotAnte, sabaccPotAnte):
+    DisplayAnte(gamePotAnte, sabaccPotAnte)
+    return funds - gamePotAnte - sabaccPotAnte
 
 def ComputeBet(RequestFunction, funds):
     amount = RequestFunction(funds)
@@ -32,14 +23,11 @@ def ComputeWin(funds):
     return "x"    
 
 
-def Ante(funds):
+def Ante(funds, gamePotAnte, sabaccPotAnte):
     while True:
         choice = RequestAnte()
         if choice == "a":
-            newFunds = ComputeAnte(funds)
-            if newFunds != "x":
-                return newFunds
-            continue
+            return ComputeAnte(funds, gamePotAnte, sabaccPotAnte)
         elif choice == "q":
             RequestOver()
         DisplaySelection()
@@ -63,11 +51,11 @@ def Bet(funds):
                 if newFunds != "x":
                     return newFunds, False
                 continue
-            elif choice == "d":
-                newFunds = ComputeBet(RequestFee, funds)
-                if newFunds != "x":
-                    return newFunds, False
-                continue
+            # elif choice == "d":
+            #     newFunds = ComputeBet(RequestFee, funds)
+            #     if newFunds != "x":
+            #         return newFunds, False
+            #     continue
         else:
             choice = RequestBankrupt()
         if choice == "p":
@@ -94,13 +82,13 @@ def Win(funds):
 
 
 def Main():
-    turns = Rule()
-    funds = RequestStart()
+    title, gamePotAnte, sabaccPotAnte, bettingPhases = RequestRule()
+    funds = Start()
     DisplayFunds(funds)
     while funds > 0:
-        funds = Ante(funds)
+        funds = Ante(funds, gamePotAnte, sabaccPotAnte)
         DisplayFunds(funds)
-        for turn in range(0, turns):
+        for turn in range(0, bettingPhases):
             DisplayTurn(turn)
             funds, folded = Bet(funds)
             if folded:

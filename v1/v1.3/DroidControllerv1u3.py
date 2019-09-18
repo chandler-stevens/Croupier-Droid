@@ -25,7 +25,7 @@ def Request(funds, message):
         if userInput == "x":
             return "x"
         elif userInput > 0:
-            if str(funds).isdigit() and userInput > funds:
+            if funds != "N/A" and userInput > funds:
                 print("Insufficient Funds: You only have", funds, "credits.")
             else:
                 return userInput
@@ -35,7 +35,7 @@ def Request(funds, message):
 
 
 def RequestStart():
-    return Request("start", "How many credits are you starting with?\n\t")
+    return Request("N/A", "How many credits are you starting with?\n\t")
 
 def RequestGame(funds):
     return Request(funds, "How many credits are you using to\n" +
@@ -61,8 +61,13 @@ def RequestRaise(funds):
                           "(Enter only the amount that you have not\n" +
                           "\tyet paid in the current betting phase.)\n\t")
 
-def RequestWin():
-    return Request("win", "How many more credits did you win?\n\t")
+def RequestGamePot():
+    return Request("N/A", "How many total credits did your\n" +
+                          "\topponents pay into the Game Pot?\n\t")
+
+def RequestSabaccPot():
+    return Request("N/A", "How many total credits did your\n" +
+                          "\topponents pay into the Sabacc Pot?\n\t")
 
 
 def RequestAnte():
@@ -71,7 +76,7 @@ def RequestAnte():
                   "\tQuit (q)\n\t")).lower()
 
 def RequestBetting():
-    return (input("\nPlease type the letter of your chosen action:\n" +
+    return (input("\nPlease type the letter of your chosen bet:\n" +
                   "\tDraw Phase Fee (d)\n" +
                   "\tPass/Check (p)\n" +
                   "\tOpen/Bet (o)\n" +
@@ -82,17 +87,28 @@ def RequestBetting():
                   "\tQuit (q)\n\t")).lower()
 
 def RequestBankrupt():
-    return (input("\nPlease type the letter of your chosen action:\n" +
+    return (input("\nPlease type the letter of your chosen bet:\n" +
                   "\tPass/Check (p)\n" +
                   "\tFold/Junk (f)\n" +
                   "\tEnd Round (e)\n" +
                   "\tQuit (q)\n\t")).lower()
 
-def RequestEnd():
-    return (input("\nPlease type the letter of your chosen action:\n" +
-                  "\tWin (w)\n" +
+def RequestWinner():
+    return (input("\nPlease type the letter of the round result:\n" +
+                  "\tYou Won (y)\n" +
+                  "\tOpponent Won (o)\n" +
+                  "\tQuit (q)\n\t")).lower()
+
+def RequestHand():
+    return (input("\nPlease type the letter of the winning hand:\n" +
+                  "\tSabacc (s)\n" +
+                  "\tNulrhek (n)\n" +
+                  "\tQuit (q)\n\t")).lower()
+
+def RequestProceed():
+    return (input("\nPlease type the letter of the chosen action:\n" +
                   "\tNext Round (n)\n" +
-                  "\tSingle Blind Card Draw Win (s)\n" +
+                  "\tSingle Blind Card Draw (s)\n" +
                   "\tQuit (q)\n\t")).lower()
 
 def RequestOver():
@@ -101,13 +117,21 @@ def RequestOver():
 
 
 def DisplaySelection():
-    print("Invalid Selection: Please select an available option.")
+    print("Invalid Selection: Please select\n\tan available option.")
 
 def DisplayFunds(funds):
     if funds != 1:
         print("You now have", funds, "credits.")
     else:
         print("You now have", funds, "credit.")
+
+def DisplayGamePot(gamePot):
+    print("Notify the winner that you paid\n\t" +
+          str(gamePot) + " credits into the Game Pot.")
+
+def DisplaySabaccPot(sabaccPot):
+    print("Notify the winner that you paid\n\t" +
+          str(sabaccPot) + " credits into the Sabacc Pot.")
 
 def DisplayEliminated():
     print("You have been eliminated from the game and\n" +

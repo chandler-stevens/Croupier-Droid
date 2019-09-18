@@ -1,3 +1,5 @@
+from HouseRulesv1u4 import rulesList
+
 def Validate(userInput):
     userInput = "".join(userInput.split())
     if userInput != "":
@@ -27,7 +29,7 @@ def Request(funds, message):
         elif userInput > 0:
             if str(funds).isdigit() and userInput > funds:
                 print("Insufficient Funds: You only have", funds, "credits.")
-            elif funds == "rule" and userInput > 4:
+            elif funds == "rule" and userInput > len(rulesList):
                 print("Invalid Number: Please enter a valid house rule number.")
             else:
                 return userInput
@@ -37,23 +39,17 @@ def Request(funds, message):
 
 
 def RequestRule():
-    return Request("rule",
-                   "Please type the number of your chosen house rule:\n" +
-                   "\tFort Ypso Lodge (1)\n" +
-                   "\tYarith Bespin Casino (2)\n" +
-                   "\tRock-Lion Cantina (3)\n" +
-                   "\tMos Eisley Cantina (4)\n\t")
+    prompt = "Please type the number of your chosen house rule:\n"
+    for index, rule in enumerate(rulesList, start=1):
+        prompt += "\t" + rule[0] + " (" + str(index) + ")\n"
+    choice = Request("rule", (prompt + "\t"))
+    if choice == "x":
+        RequestOver()
+    choice = rulesList[choice - 1]
+    return choice[0], choice[1], choice[2], choice[3]
 
 def RequestStart():
     return Request("start", "How many credits are you starting with?\n\t")
-
-def RequestGame(funds):
-    return Request(funds, "How many credits are you using to\n" +
-                          "\tante into the Game Pot?\n\t")
-
-def RequestSabacc(funds):
-   return Request(funds, "How many credits are you using to\n" +
-                         "\tante into the Sabacc Pot?\n\t")
 
 def RequestFee(funds):
     return Request(funds, "How many total credits did you pay as a\n" +
@@ -82,7 +78,7 @@ def RequestAnte():
 
 def RequestBetting():
     return (input("\nPlease type the letter of your chosen action:\n" +
-                  "\tDraw Phase Fee (d)\n" +
+                  #"\tDraw Phase Fee (d)\n" +
                   "\tPass/Check (p)\n" +
                   "\tOpen/Bet (o)\n" +
                   "\tCall/See (c)\n" +
@@ -110,6 +106,16 @@ def RequestOver():
 
 def DisplaySelection():
     print("Invalid Selection: Please select an available option.")
+
+def DisplayAnte(gamePotAnte, sabaccPotAnte):
+    message = "Buying in with an ante of\n\t" + str(gamePotAnte) + " credit"
+    if gamePotAnte != 1:
+        message += "s"
+    message += " into the Game Pot and\n\t" + str(sabaccPotAnte) + " credit"
+    if sabaccPotAnte != 1:
+        message += "s"
+    message += " into the Sabacc Pot."
+    print(message)
 
 def DisplayTurn(turn):
     print("\nBetting Phase of Turn #" + str(turn + 1))
