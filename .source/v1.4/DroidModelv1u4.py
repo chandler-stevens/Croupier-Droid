@@ -98,5 +98,3 @@ def Main():
         DisplayFunds(funds)
     DisplayEliminated()
     RequestOver()
-
-Main()
