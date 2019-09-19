@@ -63,11 +63,13 @@ def RequestRaise(funds):
 
 def RequestGamePot():
     return Request("N/A", "How many total credits did your\n" +
-                          "\topponents pay into the Game Pot?\n\t")
+                          "\topponents pay into the\n" +
+                          "\tGame Pot?\n\t")
 
 def RequestSabaccPot():
     return Request("N/A", "How many total credits did your\n" +
-                          "\topponents pay into the Sabacc Pot?\n\t")
+                          "\topponents pay into the\n" +
+                          "\tSabacc Pot?\n\t")
 
 
 def RequestAnte():
@@ -127,11 +129,13 @@ def DisplayFunds(funds):
 
 def DisplayGamePot(gamePot):
     print("Notify the winner that you paid\n\t" +
-          str(gamePot) + " credits into the Game Pot.")
+          str(gamePot) + " credits into the\n" +
+          "\tGame Pot.")
 
 def DisplaySabaccPot(sabaccPot):
     print("Notify the winner that you paid\n\t" +
-          str(sabaccPot) + " credits into the Sabacc Pot.")
+          str(gamePot) + " credits into the\n" +
+          "\tSabacc Pot.")
 
 def DisplayEliminated():
     print("You have been eliminated from the game and\n" +

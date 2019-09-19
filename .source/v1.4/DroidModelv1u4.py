@@ -1,4 +1,4 @@
-from DroidControllerv1u4 import *
+from .DroidControllerv1u4 import *
 
 def Start():
     funds = RequestStart()

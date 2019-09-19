@@ -1,5 +1,5 @@
 from socket import socket, AF_INET, SOCK_DGRAM
-from DroidModel import *
+from .DroidModel import *
 
 def Transmit(message, datalink, mainframe):
     datalink.sendto(bytes(message, "utf-8"), mainframe)
@@ -42,5 +42,3 @@ def Main():
             Transmit("Eliminated:" + player, datalink, mainframe)
             RequestEnd()
             return
-
-Main()

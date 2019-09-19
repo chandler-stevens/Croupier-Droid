@@ -1,4 +1,4 @@
-from HouseRulesv1u4 import rulesList
+from .HouseRulesv1u4 import rulesList
 
 def Validate(userInput):
     userInput = "".join(userInput.split())

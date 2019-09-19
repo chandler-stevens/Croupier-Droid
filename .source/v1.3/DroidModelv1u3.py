@@ -1,4 +1,4 @@
-from DroidControllerv1u3 import *
+from .DroidControllerv1u3 import *
 
 def Start():
     funds = RequestStart()
@@ -133,5 +133,3 @@ def Main():
         DisplayFunds(funds)
     DisplayEliminated()
     RequestOver()
-
-Main()

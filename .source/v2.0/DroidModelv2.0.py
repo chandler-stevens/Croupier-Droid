@@ -1,4 +1,4 @@
-from DroidControllerv2u0 import *
+from .DroidControllerv2u0 import *
 
 def Join():
     return RequestJoin()
