@@ -1,16 +1,17 @@
+import ssl
 from os import path, getcwd, chdir, walk, mkdir, remove, system, listdir
+from urllib import request
 from zipfile import ZipFile
 from shutil import move, rmtree
-from urllib import request
-from re import findall, fullmatch
-import ssl
-from warnings import filterwarnings
-filterwarnings("ignore", category=DeprecationWarning)
-from imp import load_module, PY_SOURCE
+from sys import path as syspath
+from importlib import import_module
+from re import findall, fullmatch     
 
 def UpdateSelf():
     # Bypass SSL certificate errors
     ssl._create_default_https_context = ssl._create_unverified_context
+
+    originalPath = getcwd()
 
     print("Downloading updates ...")
 
@@ -32,7 +33,7 @@ def UpdateSelf():
     if not path.isdir(installPath):
         mkdir(installPath)
 
-    sourcePath = installPath + ".source/"
+    sourcePath = installPath + "source/"
 
     # Create source directory if necessary
     if not path.isdir(sourcePath):
@@ -57,13 +58,13 @@ def UpdateSelf():
     move(sourcePath + "Croupier-Droid-master/Install-Croupier-Droid.py", installPath + "Temp.py")
     move(sourcePath + "Croupier-Droid-master/__init__.py", installPath)
 
+    # Load new Updater
+    syspath.append(installPath)
+    module = import_module("__init__")
+
     # Install updates
-    directory = installPath
-    package = directory + "__init__.py"
-    with open(package, "rb") as fp:
-        module = load_module(directory, fp, package, (".py", "rb", PY_SOURCE))
-    
-    module.UpdateSource(installPath, sourcePath)
+    module.UpdateSource(installPath, sourcePath, originalPath)
+
 
 def Update(source, destination):
     # Move/Overwrite all version files
@@ -84,7 +85,7 @@ def Update(source, destination):
             # Move file
             move(src_file, dst_dir)
 
-def UpdateSource(installPath, sourcePath):
+def UpdateSource(installPath, sourcePath, originalPath):
     # Cleanup launchers
     for fileName in listdir(installPath):
         filePath = path.join(installPath, fileName)
@@ -94,7 +95,7 @@ def UpdateSource(installPath, sourcePath):
     # Cleanup source
     for folder in listdir(sourcePath):
         folderPath = path.join(sourcePath, folder)
-        if path.isdir(folderPath) and fullmatch("v[0-9]+\.[0-9]+", folder) != None:
+        if path.isdir(folderPath) and fullmatch("v[0-9]+u[0-9]+", folder) != None:
             rmtree(folderPath)
     
     # Determine latest stable versions
@@ -106,10 +107,9 @@ def UpdateSource(installPath, sourcePath):
     if len(versions):
         print("Installing updates ...")
         for version in versions:
-            Update("Croupier-Droid-master/.source/" + version, version)
-            move(sourcePath + "Croupier-Droid-master/.source/Croupier-Droid.py", installPath + "/Croupier-Droid-" + version + ".py")
+            Update("Croupier-Droid-master/source/" + version.replace(".", "u"), version.replace(".", "u"))
+            move(sourcePath + "Croupier-Droid-master/source/Croupier-Droid.py", installPath + "/Croupier-Droid-" + version + ".py")
             print("Successfully updated", version)
-        print("Successfully installed all updates in\n" + installPath)
     else:
         input("ERROR! No stable versions found!")
 
@@ -125,9 +125,11 @@ def UpdateSource(installPath, sourcePath):
     if path.isdir(sourcePath + "Croupier-Droid-master"):
         rmtree(sourcePath + "Croupier-Droid-master")
 
-    # Remove cache
+    # Remove caches
     if path.isdir(installPath + "__pycache__"):
         rmtree(installPath + "__pycache__")
+    if path.isdir(originalPath + "\__pycache__"):
+        rmtree(originalPath + "\__pycache__")
 
     # Remove ZIP file
     if path.isfile(sourcePath + "Croupier-Droid-master.zip"):
@@ -138,5 +140,11 @@ def UpdateSource(installPath, sourcePath):
         from ctypes import windll
         windll.kernel32.SetFileAttributesW(sourcePath, 2)
 
-if not path.isfile("C:/CroupierDroid/Temp.py") and not path.isfile("/storage/emulated/0/qpython/CroupierDroid/Temp.py"):
-    UpdateSelf()
+    input("Successfully installed all updates in\n" + installPath)
+
+
+try:
+    if not path.isfile("C:/CroupierDroid/Temp.py") and not path.isfile("/storage/emulated/0/qpython/CroupierDroid/Temp.py"):
+        UpdateSelf()
+except Exception as error:
+        input("ERROR! " + str(error))

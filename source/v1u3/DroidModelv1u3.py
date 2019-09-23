@@ -1,4 +1,4 @@
-from .DroidControllerv1u3 import *
+from DroidControllerv1u3 import *
 
 def Start():
     funds = RequestStart()
@@ -76,7 +76,7 @@ def Win(funds, gamePot, sabaccPot):
                 elif winner == "o":
                     DisplayGamePot(gamePot)
                     DisplaySabaccPot(sabaccPot)
-                    return funds, sabaccPot
+                    return funds, 0
                 else:
                     DisplaySelection()
                     continue
@@ -86,7 +86,8 @@ def Win(funds, gamePot, sabaccPot):
                     gameWinnings = RequestGamePot()
                     if gameWinnings != "x":
                         newFunds += gamePot + gameWinnings
-                    continue
+                    else:
+                        continue
                 elif winner == "o":
                     DisplayGamePot(gamePot)
                 else:
