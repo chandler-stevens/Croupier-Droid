@@ -9,13 +9,13 @@
 
 ## Version 1: Offline Edition
 ### v1.4:
-+ *Currently in progress*
++ **Latest stable version**
 + Added game logic, including house rules
 + Performance/stability/maintainability improvements
 
 ### v1.3:
-+ **Latest stable version**
-+ Added major enhancements to game logic
++ *Made obsolete by v1.4*
++ Added major enhancements to game logic, including win results
 + Performance/stability/maintainability improvements
 
 ### v1.2:

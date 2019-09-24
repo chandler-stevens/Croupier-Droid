@@ -1,5 +1,5 @@
 # Croupier-Droid
-## Latest Stable Version: v1.3
+## Latest Stable Version: v1.4
 
 ![alt text](http://img1.starwars-holonet.com/holonet/dictionnaire/photos/droid_rh7.jpg)
 
@@ -7,14 +7,11 @@
 + *Currently in progress (v2.0)*
 + Minimal game logic
 + Console application
-+ Minimal input validation and minimal recoverability
 
 ### Version 1: Offline Edition
-+ *Latest stable version (v1.3)*
-+ *Currently in progress (v1.4)*
-+ Nominal game logic
++ *Latest stable version (v1.4)*
++ Maximal game logic
 + Console application
-+ Excellent input validation and basic recoverability
 
 ## Usage:
 1. Run "Update-Croupier-Droid.py" to update to the latest stable versions.
@@ -26,7 +23,7 @@
     > [Python 3](https://www.python.org/ftp/python/3.7.4/python-3.7.4.exe "Python 3.7.4")
   2. Right-click this link:
     > [Croupier Droid Installer](https://github.com/chandler-stevens/Croupier-Droid/raw/master/Install-Croupier-Droid.py "Install-Croupier-Droid.py") 
-    > Click "Save link as"
+    > Click "Save link/target as"
     > Click "Save"
   3. Double-click the downloaded file "Install-Croupier-Droid.py".
   4. The app will install in 'C:\CroupierDroid\'.

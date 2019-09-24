@@ -53,7 +53,9 @@ def RequestOpen(funds):
     return Request(funds, "How many credits would you like to open with?\n\t")
 
 def RequestCall(funds):
-    return Request(funds, "How many credits would you like to call with?\n\t")
+    return Request(funds, "How many credits would you like to call with?\n" +
+                          "(Enter only the amount that you have not\n" +
+                          "\tyet paid in the current betting phase.)\n\t")
 
 def RequestRaise(funds):
     return Request(funds, "How many credits would you like to\n" +

@@ -1,19 +1,29 @@
-from os import path, getcwd
-from sys import path as syspath
-from importlib import import_module
-
 try:
-    version = (path.basename(__file__)[15:-3]).replace(".", "u")
+    # Import OS directory modules
+    from os.path import basename, isdir
+    # Import regex module
+    from re import search
+    # Determine current version
+    version = search("v[0-9]+\.[0-9]+", basename(__file__)).group().replace(".", "u")
 
+    # Determine version's directory
     directory = "source/" + version + "/"
-
-    if getcwd() == "/storage/emulated/0/qpython":
+    # Account for QPython working directory
+    if isdir("/storage"):
         directory = "CroupierDroid/" + directory
 
-    syspath.append(directory)
+    # Import path marker module
+    from sys import path
+    # Import version's source code
+    path.append(directory)
 
-    module = import_module("__init__")
+    # Import importer module
+    from importlib import import_module
+    # Import version initialziation module
+    initialize = import_module("__init__")
 
-    module.Main()
+    # Launch version
+    initialize.Launch(version, import_module)
+# Capture any runtime errors
 except Exception as error:
     input("ERROR! " + str(error))
