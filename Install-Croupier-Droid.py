@@ -1,7 +1,7 @@
 # Import select modules from OS package
 from os import path, getcwd, chdir, mkdir, walk, remove, system, listdir
-# Import move/rename module and recursive delete module
-from shutil import move, rmtree
+# Import move/rename module, copy module, and recursive delete module
+from shutil import move, copy, rmtree
 
 # Purpose: Self-update installer/updater and download source code
 # Parameters: None
@@ -113,6 +113,10 @@ def UpdateSource(installPath, sourcePath, originalPath):
         filePath = path.join(installPath, fileName)
         if path.isfile(filePath) and fullmatch("Croupier\-Droid\-v[0-9]+\.[0-9]+\.py", fileName) != None:
             remove(filePath)
+    for fileName in listdir(installPath):
+        filePath = path.join(installPath, fileName)
+        if path.isfile(filePath) and fullmatch("Mainframe\-v[0-9]+\.[0-9]+\.py", fileName) != None:
+            remove(filePath)
 
     # Cleanup source
     for folder in listdir(sourcePath):
@@ -130,7 +134,9 @@ def UpdateSource(installPath, sourcePath, originalPath):
         print("Installing updates ...")
         for version in versions:
             Update("Croupier-Droid-master/source/" + version.replace(".", "u"), version.replace(".", "u"))
-            move(sourcePath + "Croupier-Droid-master/source/Croupier-Droid.py", installPath + "/Croupier-Droid-" + version + ".py")
+            copy(sourcePath + "Croupier-Droid-master/source/Croupier-Droid.py", installPath + "/Croupier-Droid-" + version + ".py")
+            if version.startswith("v2."):
+                copy(sourcePath + "Croupier-Droid-master/source/Mainframe.py", installPath + "/Mainframe-" + version + ".py")
             print("Successfully updated", version)
     else:
         input("ERROR! No stable versions found!")

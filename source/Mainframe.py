@@ -24,9 +24,7 @@ try:
 
     # Launch version
     if version.startswith("v2u"):
-        initialize.LaunchClient(version, import_module)
-    elif version.startswith("v1u"):
-        initialize.Launch(version, import_module)
+        initialize.LaunchServer(version, import_module)
 # Capture any runtime errors
 except Exception as error:
     input("ERROR! " + str(error))

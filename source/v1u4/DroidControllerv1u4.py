@@ -86,7 +86,7 @@ def RequestStart(lastFunds):
     return Request("start", "\nHow many credits are you starting with?\nYour previous game left you with " + str(lastFunds) + AnalyzePlurality(" credit", lastFunds) + ".\n\t")
 
 # Purpose: Ask player for chosen house rule
-# Parameters: Current funds (integer)
+# Parameters: Current funds (integer), house rules (list)
 # Returns: Title (string), Game Pot ante (integer), Sabacc Pot ante (integer), Phases ordering (integer list), Draw Phase fees (integer list)
 def RequestRule(funds, rulesList):
     # Initialize prompt for house rule

@@ -6,21 +6,21 @@ def Start(parser, saveFile, controller):
     parser.read(saveFile)
     # Retrieve value of funds left over from previous game
     lastFunds = parser["GENERAL"]["last_funds"]
-    
+
     # Retrieve starting funds
     funds = controller.RequestStart(lastFunds)
-    
+
     # Accept valid starting funds
     if funds != "x":
         return funds
-    
+
     # End game if 'x' cancel option given
     controller.RequestOver()
 
 
 # Purpose: Wager a bet
 # Parameters: Current funds (integer), total amount that player has paid in the current Betting Phase so far (integer), ability to directly end Betting Phase (boolean), controller (module)
-# Returns: Starting funds (integer)
+# Returns: Starting funds (integer), bet amount (integer), turn over (boolean)
 def Bet(funds, phaseSum, end, controller):
     # Ask until valid input given
     while True:
@@ -57,7 +57,7 @@ def Bet(funds, phaseSum, end, controller):
                 # Fold
                 elif choice == "f":
                     return funds, -1, True
-                # End game if able
+                # End Betting Phase if able
                 elif end and choice == "e":
                     return funds, 0, True
             # If insufficient funds to match highest bet
@@ -91,7 +91,7 @@ def Bet(funds, phaseSum, end, controller):
 
 # Purpose: Process results of round
 # Parameters: Current funds (integer), amount player has paid into Game Pot (integer), amount player has paid into Sabacc Pot (integer), necessity to ask who won (boolean), controller (module)
-# Returns: Starting funds (integer)
+# Returns: Starting funds (integer), Sabacc Pot (integer)
 def Win(funds, gamePot, sabaccPot, bet, controller):
     # Ask until valid input given
     while True:

@@ -1,11 +1,15 @@
 # Changelog
 
 ## Version 2: Multiplayer Edition
-### v2.0:
+### v2.1:
 + *Currently in progress*
-+ Minimal game logic
++ Adding major automation to game logic, including pot management
 + Console application
-+ Minimal input validation and minimal recoverability
+
+### v2.0:
++ **Latest stable version**
++ Added networking framework around v1.4, including joining session
++ Console application
 
 ## Version 1: Offline Edition
 ### v1.4:
