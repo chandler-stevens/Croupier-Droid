@@ -90,12 +90,9 @@ def Connect(model, controller):
             controller.DisplayMessage(message)
 
         # Check if player is current dealer
-        if message == ("You have been designated as " +
-                       "the dealer for this round."):
-            # Wait for dealer to provide valid number of players for round
-            message = controller.RequestPlayers()
-            # Transmit number of players
-            Transmit(message, datalink, mainframe)
+        if message == "You have been designated as the dealer for this round.":
+            # Wait for dealer to provide valid number of players for round and transmit
+            Transmit(controller.RequestPlayers(), datalink, mainframe)
         # Check if session is full
         elif message == "There are enough players for this round.":
             # Reject extra player
@@ -126,7 +123,7 @@ def Play(version, import_module):
     # Import parent directory name
     from os.path import dirname
     # Locate CFG
-    saveFile = dirname(__file__) + "/Save.cfg"
+    saveFile = dirname(__file__) + "/DroidCache" + version + ".cfg"
     
     # Retrieve starting funds
     funds = model.Start(parser, saveFile, controller)

@@ -208,7 +208,7 @@ def Play(version, import_module):
     # Import parent directory name
     from os.path import dirname
     # Locate CFG
-    saveFile = dirname(__file__) + "/Save.cfg"
+    saveFile = dirname(__file__) + "/DroidCache" + version + ".cfg"
     
     # Retrieve starting funds
     funds = Start(parser, saveFile, controller)

@@ -132,7 +132,8 @@ def Play(players, droids, datalink):
             # Remove player and droid from list of players and droids
             players.pop(index)
             droids.pop(index)
-            print(players, droids)
+            print(players)
+
 
 # Purpose: Setup session
 # Parameters: None

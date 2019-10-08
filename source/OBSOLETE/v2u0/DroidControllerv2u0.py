@@ -40,9 +40,9 @@ def Validate(playerInput):
 
 
 # Purpose: Ask player for non-negative integer or 'x' cancel
-# Parameters: Current funds (integer) or request type (string), prompt for input (string), house rules quantity (integer)
+# Parameters: Current funds (integer) or request type (string), prompt for input (string), extra value (integer)
 # Returns: Converted player input (integer) or 'x' cancel (string)
-def Request(funds, message, rules=0):
+def Request(funds, message, value=0):
     # Ask until valid input given
     while True:
         # Ask player for valid input
@@ -55,7 +55,7 @@ def Request(funds, message, rules=0):
                 if str(funds).isdigit() and playerInput > funds:
                     print("Insufficient Funds: You only have " + str(funds) + " credits.")
                 # Reject out of list bounds input for house rule
-                elif funds == "rule" and playerInput > rules:
+                elif funds == "rule" and playerInput > value:
                     print("Invalid Number: Please enter a valid house rule number.")
                 # Accept valid positive integer
                 else:

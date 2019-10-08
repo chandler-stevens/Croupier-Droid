@@ -1,13 +1,16 @@
 # Changelog
 
 ## Version 2: Multiplayer Edition
-### v2.1:
+### v2.2:
 + *Currently in progress*
-+ Adding major automation to game logic, including pot management
-+ Console application
++ Adding support for Draw Phase Fees and multiple rounds
+
+### v2.1:
++ **Latest stable version**
++ Added major automation to game logic, including pot management
 
 ### v2.0:
-+ **Latest stable version**
++ *Made obsolete by v2.1*
 + Added networking framework around v1.4, including joining session
 + Console application
 
