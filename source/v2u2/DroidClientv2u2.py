@@ -1,3 +1,4 @@
+from importlib import import_module
 
 
 # Purpose: Transmit message to mainframe
@@ -50,61 +51,63 @@ def Connect(controller, version):
     # Setup datalink
     datalink = socket(AF_INET, SOCK_DGRAM)
 
-    # Identify mainframe
-    mainframe = ""
-    # Connect to dummy socket to determine default gateway
-    datalink.connect(("8.8.8.8", 80))
-    # Determine connected IPv4 address
-    ip = datalink.getsockname()[0]
-    # Close dummy socket
-    datalink.close()
-    # Restart socket
-    datalink = socket(AF_INET, SOCK_DGRAM)
-    # Find last dot in connected IPv4 address
-    dot = ip.rfind(".") + 1
-    # Extract subnet to determine default gateway
-    ip = ip[:dot]
-    # Import select module
-    from select import select
+    # # Identify mainframe
+    # mainframe = ""
+    # # Connect to dummy socket to determine default gateway
+    # datalink.connect(("8.8.8.8", 80))
+    # # Determine connected IPv4 address
+    # ip = datalink.getsockname()[0]
+    # # Close dummy socket
+    # datalink.close()
+    # # Restart socket
+    # datalink = socket(AF_INET, SOCK_DGRAM)
+    # # Find last dot in connected IPv4 address
+    # dot = ip.rfind(".") + 1
+    # # Extract subnet to determine default gateway
+    # ip = ip[:dot]
+    # # Import select module
+    # from select import select
+    #
+    # # Initialize connection status to unconnected
+    # connected = False
+    # while not connected:
+    #     # Iterate through all possible IPv4 addresses in subnet
+    #     for i in range(1, 254):
+    #         try:
+    #             # Transmit test message
+    #             Transmit("TEST:", datalink, (ip + str(i), 2187))
+    #         except ConnectionResetError:
+    #             continue
+    #
+    #     # Initialize received message
+    #     message = ""
+    #     # Wait until correct server responds
+    #     while message != "TRUE":
+    #         # Wait for response from a server with 10 second timeout
+    #         response = select([datalink], [], [], 10)
+    #         # If response received
+    #         if response[0]:
+    #             try:
+    #                 # Receive message
+    #                 message, mainframe = datalink.recvfrom(4096)
+    #                 # Convert message from UTF-8 Bytes
+    #                 message = str(message.decode("utf-8"))
+    #             except ConnectionResetError:
+    #                 # Ignore unavailable server
+    #                 continue
+    #         else:
+    #             # Notify player of connection failure
+    #             controller.RequestUnconnected()
+    #             break
+    #     if message == "TRUE":
+    #         connected = True
+    #
+    # # Close socket in case other servers responded
+    # datalink.close()
+    # # Restart socket
+    # datalink = socket(AF_INET, SOCK_DGRAM)
 
-    # Initialize connection status to unconnected
-    connected = False
-    while not connected:
-        # Iterate through all possible IPv4 addresses in subnet
-        for i in range(1, 254):
-            try:
-                # Transmit test message
-                Transmit("TEST:", datalink, (ip + str(i), 2187))
-            except ConnectionResetError:
-                continue
-
-        # Initialize received message
-        message = ""
-        # Wait until correct server responds
-        while message != "TRUE":
-            # Wait for response from a server with 10 second timeout
-            response = select([datalink], [], [], 10)
-            # If response received
-            if response[0]:
-                try:
-                    # Receive message
-                    message, mainframe = datalink.recvfrom(4096)
-                    # Convert message from UTF-8 Bytes
-                    message = str(message.decode("utf-8"))
-                except ConnectionResetError:
-                    # Ignore unavailable server
-                    continue
-            else:
-                # Notify player of connection failure
-                controller.RequestUnconnected()
-                break
-        if message == "TRUE":
-            connected = True
-
-    # Close socket in case other servers responded
-    datalink.close()
-    # Restart socket
-    datalink = socket(AF_INET, SOCK_DGRAM)
+    mainframe = ("127.0.0.1", 2187)  # #########################################
 
     # Ask for name until successfully joined
     message = ""
@@ -357,3 +360,5 @@ def Play(version, import_module):
             funds += int(message[8:message.index(" credits")])
         controller.DisplayFunds(funds)
         UpdateSave(funds, parser, saveFile)
+
+Play("v2u2", import_module)

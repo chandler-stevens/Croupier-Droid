@@ -1,3 +1,5 @@
+from importlib import import_module
+
 # TODO: Comments, Draw Phase Fees, Multiple Rounds, Optimization
 
 
@@ -579,3 +581,5 @@ def Setup(version, import_module):
 
     # Begin round
     Play(playerOrder, datalink, rule)
+
+Setup("v2u2", import_module)
