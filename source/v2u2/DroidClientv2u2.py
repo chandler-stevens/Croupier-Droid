@@ -156,27 +156,40 @@ def Connect(controller, version):
                 # Reject extra player
                 controller.RequestOver()
             # Directly display a received message
-            elif message != "TRUE":
+            elif message != "TRUE" and message != "All players have joined.":
                 controller.DisplayMessage(message)
 
+    if not dealer:
+        # Wait to receive ready message from mainframe
+        values = [""]
+        while values[0] != "Ready":
+            values = Receive(datalink)
+        # Notify all players that all players have joined
+        controller.DisplayMessage(message)
     # Once all players have joined, ask dealer to provide physical ordering of players
-    if dealer:
+    else:
+        controller.DisplayMessage(message)
         # Initialize order of players
         playerOrder = []
         # If there are more than two total players, including the dealer
         if len(playerList) > 1:
-            # While the player list is not empty
-            while len(playerList) != 0:
+            # While the player list has more than one player
+            while len(playerList) > 1:
                 # If at least one player has already been properly ordered
                 if len(playerOrder) != 0:
                     # Display most recently ordered player within prompt and the remaining unordered players
-                    nextPlayer = controller.requestOrder(playerOrder[-1], playerList, numberOrder)
+                    nextPlayer = controller.RequestOrder(playerOrder[-1], playerList, numberOrder)
                 # Otherwise, if no players have been ordered yet
                 else:
                     # Display dealer's player name within prompt and the remaining unordered players
-                    nextPlayer = controller.requestOrder(player, playerList, numberOrder)
+                    nextPlayer = controller.RequestOrder(player, playerList, numberOrder)
+                # Remove the player from the list of unordered player numbers
                 numberOrder.remove(nextPlayer)
+                # Remove the player from the list of unordered player names
+                #  and add the player name to the list of ordered players
                 playerOrder.append(playerList.pop(nextPlayer - 2)[:-4])
+            # Add the final remaining player name to the ordered list
+            playerOrder.append(playerList.pop()[:-4])
         # Otherwise, if there is just one player playing against the dealer
         else:
             # Begin the ordered list with the opposing player
@@ -185,6 +198,8 @@ def Connect(controller, version):
         playerOrder.append(player)
         # Transmit ordered list of players to mainframe
         Transmit("Order:" + str(playerOrder), datalink, mainframe)
+        # Capture unneeded ready message
+        Receive(datalink)
 
     # Return datalink, mainframe, and dealer status
     return datalink, mainframe, dealer
@@ -244,7 +259,7 @@ def Play(version, import_module):
     # Locate CFG
     saveFile = dirname(__file__) + "/DroidCache" + version + ".cfg"
     
-    # Retrieve starting funds
+    # Ask for starting funds
     funds = Start(parser, saveFile, controller)
 
     # Transmit starting funds to mainframe
@@ -252,7 +267,7 @@ def Play(version, import_module):
 
     # Play rounds until eliminated
     while funds > 0:
-        # Retrieve for chosen house rule details message
+        # Retrieve chosen house rule details message
         values = Receive(datalink)
 
         # Extract house rule title
@@ -293,66 +308,69 @@ def Play(version, import_module):
         # Loop until round is over
         inRound = True
         while inRound:
-            # Get turn number or round end from mainframe
+            # Get message from mainframe
             values = Receive(datalink)
             action = values[0]
 
             if action == "Turn":
                 controller.DisplayTurn(values[1])
+            elif action == "Betting":
+                # Loop until Betting Phase complete
+                bettingComplete = False
+                while inRound and not bettingComplete:
+                    # Get bet info from mainframe
+                    values = Receive(datalink)
+                    action = values[0]
+
+                    if action == "Bet":
+                        highestBet = int(values[1])
+
+                        # Send chosen bet option to mainframe
+                        bet = controller.RequestBetting(highestBet, funds)
+                        Transmit(bet, datalink, mainframe)
+
+                        # Get remaining funds from mainframe
+                        values = Receive(datalink)
+                        funds = int(values[1])
+                        controller.DisplayFunds(funds)
+                        UpdateSave(funds, parser, saveFile)
+
+                        if bet != "Fold":
+                            # Get betting cycle status from mainframe
+                            if Receive(datalink)[1] == "False":
+                                bettingComplete = False
+                            else:
+                                bettingComplete = True
+                        else:
+                            bettingComplete = True
+                            inRound = False
+                    elif action == "Round":
+                        # Get betting cycle status from mainframe
+                        if values[1] == "False":
+                            bettingComplete = False
+                        else:
+                            bettingComplete = True
+                        controller.DisplayOutcome(values[2], values[3], int(values[4]))
+            elif action == "Fee":
+                # Retrieve Draw Phase fees paid
+                funds, gamePotFees, sabaccPotFees = controller.RequestFee(funds, drawFees)
+
+                # Transmit fee to mainframe
+                Transmit("Paid:" + str(gamePotFees) + ":" + str(sabaccPotFees), datalink, mainframe)
+
+                # Get remaining funds from mainframe
+                values = Receive(datalink)
+                funds = int(values[1])
+                controller.DisplayFunds(funds)
+                UpdateSave(funds, parser, saveFile)
             elif action == "Win":
                 inRound = False
 
-            # Loop until Betting Phase complete
-            bettingComplete = False
-            while inRound and not bettingComplete:
-                # Get bet info from mainframe
-                values = Receive(datalink)
-                action = values[0]
-
-                if action == "Bet":
-                    highestBet = int(values[1])
-                    funds = int(values[2])
-
-                    # Send chosen bet option to mainframe
-                    Transmit(controller.RequestBetting(highestBet, funds), datalink, mainframe)
-
-                    # Get remaining funds from mainframe
-                    values = Receive(datalink)
-                    funds = int(values[1])
-                    controller.DisplayFunds(funds)
-                    UpdateSave(funds, parser, saveFile)
-                    # Get betting cycle status from mainframe
-                    if Receive(datalink)[1] == "False":
-                        bettingComplete = False
-                    else:
-                        bettingComplete = True
-                elif action == "Round":
-                    # Get betting cycle status from mainframe
-                    if values[1] == "False":
-                        bettingComplete = False
-                    else:
-                        bettingComplete = True
-                    controller.DisplayOutcome(values[2], values[3], int(values[4]))
-
-# DRAW PHASE START
-#
-# # Retrieve Draw Phase fees paid
-# funds, gamePotFees, sabaccPotFees = controller.RequestFee(funds, drawFees)
-#
-# # Transmit fee to mainframe
-# Transmit("Fee:"+str(gamePotFees)+":"+str(sabaccPotFees), datalink, mainframe)
-#
-# # Notify player of available funds and update CFG
-# controller.DisplayFunds(funds)
-# model.UpdateSave(funds, parser, saveFile)
-#
-# DRAW PHASE END
-#
-
-        if dealer:
-            Transmit("Winner:" + str(
-                controller.RequestWinner(values[1], int(values[2]))) +
-                     ":" + controller.RequestHand(), datalink, mainframe)
+        hand = "n"
+        if dealer and values[1] != "ONLY_ONE_PLAYER_REMAINING":
+            winner = str(controller.RequestWinner(values[1], int(values[2])))
+            hand = controller.RequestHand()
+            Transmit("Winner:" + winner + ":" + hand, datalink, mainframe)
         values = Receive(datalink)
         message = values[0]
         controller.DisplayMessage(message)
@@ -360,5 +378,23 @@ def Play(version, import_module):
             funds += int(message[8:message.index(" credits")])
         controller.DisplayFunds(funds)
         UpdateSave(funds, parser, saveFile)
+
+        if hand == "n":
+            if dealer:
+                action = controller.RequestProceed()
+                Transmit(action, datalink, mainframe)
+                if action == "s":
+                    values = Receive(datalink)
+                    winner = str(controller.RequestWinner(values[1], int(values[2])))
+                    Transmit("Winner:" + winner + ":s", datalink, mainframe)
+
+            values = Receive(datalink)
+            message = values[0]
+            controller.DisplayMessage(message[:-7] + "Single Blind Card Draw"
+                                      + message[-1])
+            if message.startswith("You won "):
+                funds += int(message[8:message.index(" credits")])
+            controller.DisplayFunds(funds)
+            UpdateSave(funds, parser, saveFile)
 
 Play("v2u2", import_module)

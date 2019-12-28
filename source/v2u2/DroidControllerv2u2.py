@@ -119,9 +119,9 @@ def RequestOrder(player, playerList, numberOrder):
     print("Please type the number of the player\nthat is sitting to the left of " + player + ":")
     # Display the remaining unordered players with their corresponding numbers
     for name in playerList:
-        print(name)
+        print("\t" + name)
     # Ask dealer for who the next player is in the physical ordering
-    return Request("order", "", numberOrder)
+    return Request("order", "\t", numberOrder)
 
 
 # Purpose: Ask player for starting funds and notify of remaining funds from last game
@@ -289,7 +289,7 @@ def RequestBetting(highestBet, funds):
         choice = input(message).lower()
 
     if choice == "p":
-        return "Pass:"
+        return "Pass"
     elif choice == "o":
         return "Open:" + str(RequestOpen(funds))
     elif choice == "c":

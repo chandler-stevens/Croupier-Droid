@@ -1,7 +1,7 @@
 # Title (String),
 # Game Pot Ante (Integer),
 # Sabacc Pot Ante (Integer),
-# Turns [0], Betting Phases [1], Draw Phases [2] (Integer List),
+# Turn [0], Betting Phase [1], Draw Phase [2] (Integer List),
 # Draw Phase Fees (List of 2 Lists)
 #   Game Pot Fees (Integer List)
 #   Sabacc Pot Fees (Integer List)

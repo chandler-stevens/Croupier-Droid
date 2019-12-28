@@ -1,6 +1,8 @@
 from importlib import import_module
 
-# TODO: Comments, Draw Phase Fees, Multiple Rounds, Optimization
+# TODO: Elimination, Quitting,
+#  Multiple Rounds, Joining,
+#  Comments, Optimization
 
 
 # Class representing an instance of a player
@@ -52,8 +54,9 @@ class Player(object):
     def broadcast(self, message, datalink):
         import gc
         for instance in (obj for obj in gc.get_referrers(self.__class__) if isinstance(obj, self.__class__)):
-            # Convert message to UTF-8 Bytes and transmit to all droids
-            datalink.sendto(bytes(message, "utf-8"), instance.droid)
+            if not instance.folded:
+                # Convert message to UTF-8 Bytes and transmit to all droids
+                datalink.sendto(bytes(message, "utf-8"), instance.droid)
 
 
 # Purpose: Transmit message to droid
@@ -140,6 +143,9 @@ def Play(players, datalink, rule):
     highestBet = 0
     turn = 0
 
+    # Initialize list of folded players
+    folded = []
+
     # Initialize ante amounts and phase ordering
     gamePotAnte = rule[1]
     sabaccPotAnte = rule[2]
@@ -161,6 +167,10 @@ def Play(players, datalink, rule):
         if action == "Start":
             # Set player funds
             player.funds = int(values[1])
+
+            # Notify player of house rule details including title, Game Pot ante, Sabacc Pot ante, and Draw Phase fees
+            player.unicast(rule[0] + ":" + str(rule[1]) + ":" + str(rule[2]) + ":" + str(rule[4]), datalink)
+
             print(action, player.name, player.funds)
 
         # Process ante
@@ -194,18 +204,18 @@ def Play(players, datalink, rule):
                     players[0].unicast("You are the only remaining player left.", datalink)
                     exit(0)
 
-                print("Elimination. Players remaining:", players)
+                print("Elimination. Players remaining:", len(players))
 
         # Reject player attempting to join already filled session
         elif action == "Joined":
             Unicast("There are enough players for this round.", datalink, droid)
             print("Rejected extra player " + values[1])
 
-    # Set all players to not folded status
-    players[0].unfold()
-
     # Iterate through phase ordering of selected house rule
     for section in order:
+        # End round since only one player left
+        if len(players) == 1:
+            break
         # Start of turn
         if section == 0:
             # Increment counter
@@ -228,10 +238,13 @@ def Play(players, datalink, rule):
             droid = ""
             values = ""
 
+            # Notify all players of Betting Phase
+            players[0].broadcast("Betting:", datalink)
+
             # Loop until end of phase
             while not over:
                 player = players[index]
-                player.unicast("Bet:" + str(highestBet) + ":" + str(player.funds), datalink)
+                player.unicast("Bet:" + str(highestBet), datalink)
                 # Wait for message from client
                 while droid != player.droid:
                     droid, values = Receive(datalink)
@@ -241,6 +254,10 @@ def Play(players, datalink, rule):
                 if action == "Fold":
                     # Denote that player folded
                     player.folded = True
+                    # Pop from list of players into list of folded players
+                    folded.append([index, players.pop(index)])
+                    # Offset index
+                    index -= 1
 
                 # Check if no player has yet opened
                 if highestBet == 0:
@@ -300,7 +317,9 @@ def Play(players, datalink, rule):
                 if index >= len(players):
                     index = 0
                     cycled = True
-                if cycled:
+                if len(players) == 1:
+                    over = True
+                elif cycled:
                     over = player.check_complete(highestBet)
                 player.broadcast("Round:" + str(over) + ":" + player.name +
                                  ":" + action + ":" + str(highestBet),
@@ -310,38 +329,54 @@ def Play(players, datalink, rule):
 
         # Draw Phase fee
         elif section == 2:
-            # Wait for message from client
-            droid, values = Receive(datalink)
-            action = values[0]
-            gamePotFee = values[1]
-            sabaccPotFee = values[2]
-            # Determine player index
-            player, index = Identify(droid, players)
-
-            # Process Draw Phase Fee
-            if action == "Fee":
+            # Loop until all players have processed any Draw Phase Fees
+            for player in players:
+                droid = ""
+                values = ""
+                player.unicast("Fee:", datalink)
+                # Wait for message from client
+                while droid != player.droid:
+                    droid, values = Receive(datalink)
+                action = values[0]
+                gamePotFee = int(values[1])
+                sabaccPotFee = int(values[2])
+                # Process Draw Phase Fee
                 # Increment both pots by respective fee
                 gamePot += gamePotFee
                 sabaccPot += sabaccPotFee
 
                 # Deduct fees from player funds
                 player.funds -= (gamePotFee + sabaccPotFee)
+
+                player.unicast("Funds:" + str(player.funds), datalink)
+
                 print(action, player.name, gamePot, sabaccPot)
 
-    # Ask dealer who won
-    message = "Win:"
-    indexOne = 1
-    for player in players:
-        message += "\t" + player.name + " (" + str(indexOne) + ")\n"
-        indexOne += 1
-    players[0].broadcast(message + ":" + str(indexOne - 1), datalink)
+    # If more than one player left in the round
+    if len(players) > 1:
+        # Ask dealer who won
+        message = "Win:"
+        indexOne = 1
+        for player in players:
+            message += "\t" + player.name + " (" + str(indexOne) + ")\n"
+            indexOne += 1
+        players[0].broadcast(message + ":" + str(indexOne - 1), datalink)
 
-    droid = ""
-    values = ""
-    # Wait for message from dealer
-    while droid != players[-1].droid or values[0] != "Winner":
-        droid, values = Receive(datalink)
+        droid = ""
+        values = ""
+        # Wait for message from dealer
+        while droid != players[-1].droid or values[0] != "Winner":
+            droid, values = Receive(datalink)
+    else:
+        players[0].broadcast("Win:ONLY_ONE_PLAYER_REMAINING", datalink)
+        values = ["Winner", 0, "n"]
+
     winner = players[int(values[1])]
+
+    # Set all players to not folded status
+    players[0].unfold()
+    for index in range((len(folded) - 1), -1, -1):
+        players.insert(folded[index][0], folded[index][1])
 
     # Process Nulrhek win
     if values[2] == "n":
@@ -362,8 +397,29 @@ def Play(players, datalink, rule):
         gamePot = 0
 
         print("Nulrhek", winner.name)
+
+        droid = ""
+        # Wait for message from dealer
+        while droid != players[-1].droid:
+            droid, values = Receive(datalink)
+        if values[0] == "s":
+            # Ask dealer who won
+            message = "Win:"
+            indexOne = 1
+            for player in players:
+                message += "\t" + player.name + " (" + str(indexOne) + ")\n"
+                indexOne += 1
+            players[-1].unicast(message + ":" + str(indexOne - 1), datalink)
+
+            droid = ""
+            values = ""
+            # Wait for message from dealer
+            while droid != players[-1].droid or values[0] != "Winner":
+                droid, values = Receive(datalink)
+            winner = players[int(values[1])]
+
     # Process Sabacc win
-    elif values[2] == "s":
+    if values[2] == "s":
         # Transfer both pots to winner
         winner.funds += gamePot + sabaccPot
 
@@ -576,8 +632,8 @@ def Setup(version, import_module):
                 # For increasingly faster performance, remove the player instance from the player instances list, thus making that list shorter
                 players.remove(player)
 
-    # Notify all players of house rule details including title, Game Pot ante, Sabacc Pot ante, and Draw Phase fees
-    playerOrder[0].broadcast(rule[0] + ":" + str(rule[1]) + ":" + str(rule[2]) + ":" + str(rule[4]), datalink)
+    # Notify all players that round is ready to start
+    playerOrder[0].broadcast("Ready", datalink)
 
     # Begin round
     Play(playerOrder, datalink, rule)
