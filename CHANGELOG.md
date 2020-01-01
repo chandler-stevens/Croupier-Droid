@@ -1,12 +1,16 @@
 # Changelog
 
 ## Version 2: Multiplayer Edition
-### v2.2:
+### v2.3:
 + *Currently in progress*
-+ Adding support for Draw Phase Fees and multiple rounds
++ Adding support for multiple rounds
+
+### v2.2:
++ **Latest stable version**
++ Added support for Draw Phase Fees, Folding, and Elimination
 
 ### v2.1:
-+ **Latest stable version**
++ *Made obsolete by v2.2*
 + Added major automation to game logic, including pot management
 
 ### v2.0:

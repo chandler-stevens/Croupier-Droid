@@ -1,4 +1,4 @@
-# from importlib import import_module
+from importlib import import_module
 
 # TODO: Multiple Rounds, Joining,
 #  Comments, Optimization,
@@ -737,4 +737,4 @@ def Setup(version, importModule):
     Play(playerOrder, datalink, rule)
 
 
-# Setup("v2u2", import_module)
+Setup("v2u3", import_module)

@@ -1,11 +1,11 @@
 # Croupier-Droid
-## Latest Stable Versions: v1.4 and v2.1
+## Latest Stable Versions: v1.4 and v2.2
 
 ![alt text](http://img1.starwars-holonet.com/holonet/dictionnaire/photos/droid_rh7.jpg)
 
 ### Version 2: LAN Edition
-+ *Currently in progress (v2.2)*
-+ *Latest stable version (v2.1)*
++ *Currently in progress (v2.3)*
++ *Latest stable version (v2.2)*
 + Excellent game logic
 + Console application
 

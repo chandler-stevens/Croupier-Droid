@@ -1,4 +1,4 @@
-# from importlib import import_module
+from importlib import import_module
 
 
 # Purpose: Transmit message to mainframe
@@ -107,7 +107,7 @@ def Connect(controller, version, importModule):
     # Restart socket
     datalink = socket(AF_INET, SOCK_DGRAM)
 
-    # mainframe = ("127.0.0.1", 2187)  # #######################################
+    mainframe = ("127.0.0.1", 2187)  # #######################################
 
     # Ask for name until successfully joined
     message = ""
@@ -602,4 +602,4 @@ def Play(version, importModule):
                 controller.RequestOver()
 
 
-# Play("v2u2", import_module)
+Play("v2u3", import_module)

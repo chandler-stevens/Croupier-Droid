@@ -486,7 +486,7 @@ def DisplayFunds(funds):
 # Parameters: None
 # Returns: None
 def DisplayEliminated():
-    print("You have been eliminated from the game\n" +
+    print("\nYou have been eliminated from the game\n" +
           "since you do not have enough credits to\n" +
           "call the highest bet.")
 
@@ -496,11 +496,11 @@ def DisplayEliminated():
 # Returns: None
 def DisplayLastPlayerStanding(winnings, gameOver):
     if gameOver:
-        print("\n\nAll your opponents have been eliminated from the game!\n" +
+        print("\nAll your opponents have been eliminated from the game!\n" +
               "Therefore, you won " + str(winnings) + " credits\n" +
               "from both the Sabacc Pot and Game Pot!")
     else:
-        print("\n\nAll your opponents have folded.\n" +
+        print("\nAll your opponents have folded.\n" +
               "Therefore, you win this round and\n" +
               "won " + str(winnings) + " credits from the Game Pot!")
 
